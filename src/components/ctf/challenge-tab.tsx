@@ -107,7 +107,7 @@ export function ChallengeTab({ challenges, onRefresh, onSelect }: Props) {
             </div>
             <div className="space-y-1.5">
               <Label className="text-zinc-300">Cookie header (sessionid, cf_clearance…)</Label>
-              <Textarea value={cookies} onChange={(e) => setCookies(e.target.value)} placeholder={"sessionid=p0uni...; cf_clearance=ZEy..."} className="bg-zinc-900 border-zinc-800 font-mono text-xs min-h-[70px]" />
+              <Textarea value={cookies} onChange={(e) => setCookies(e.target.value)} placeholder={"sessionid=...; cf_clearance=..."} className="bg-zinc-900 border-zinc-800 font-mono text-xs min-h-[70px]" />
             </div>
             <div className="space-y-1.5">
               <Label className="text-zinc-300">User-Agent (must match the one used to get cf_clearance)</Label>
