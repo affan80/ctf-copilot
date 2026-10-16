@@ -64,3 +64,6 @@ server.log
 /prisma/dev.db
 *.sqlite
 *.db-journal
+# CTF session artifacts — never push (contain session cookies / huge binaries)
+/scripts/
+/download/

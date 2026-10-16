@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { runFullSolver } from "@/lib/ctf/solver";
+import { decodeTimingGaps } from "@/lib/ctf/timing";
 import {
   decodeChain, extractFlags, rotN, rot47, tryReverse, tryBase64, tryHex, tryBinary, tryMorse,
 } from "@/lib/ctf/decoders";
@@ -88,6 +89,17 @@ const TOOLS = [
       type: "object",
       properties: { data: { type: "string" }, encoding: { type: "string", enum: ["base64", "hex"], description: "default base64" } },
       required: ["data"],
+    },
+  },
+  {
+    name: "decode_timing_channel",
+    description: "Decode covert channels hidden in inter-packet timing gaps (from a pcap): plain binary L/H levels, Manchester pairs (LH/HL), burst counts. Pass gap durations in milliseconds.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        gaps: { type: "array", items: { type: "number" }, description: "Inter-event gap durations in milliseconds, in order" },
+      },
+      required: ["gaps"],
     },
   },
   {
@@ -179,6 +191,10 @@ async function executeTool(name: string, args: Record<string, unknown>): Promise
     }
     case "quick_decodes":
       return { base64: tryBase64(text), hex: tryHex(text), binary: tryBinary(text), morse: tryMorse(text) };
+    case "decode_timing_channel": {
+      const gaps = Array.isArray(args.gaps) ? (args.gaps as unknown[]).map(Number) : [];
+      return decodeTimingGaps(gaps);
+    }
     case "fetch_challenge": {
       const url = String(args.url);
       const headers: Record<string, string> = {

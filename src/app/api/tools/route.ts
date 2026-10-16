@@ -6,6 +6,7 @@ import {
   frequencyAnalysis, identifyHash, computeHashes, decodeJwt,
 } from "@/lib/ctf/crypto";
 import { runFullSolver } from "@/lib/ctf/solver";
+import { decodeTimingGaps } from "@/lib/ctf/timing";
 
 export const dynamic = "force-dynamic";
 
@@ -76,6 +77,14 @@ export async function POST(req: Request) {
           morse: tryMorse(text),
         };
         break;
+      case "timing": {
+        // accept either raw list of gap-ms or whitespace/newline separated numbers
+        const gaps = Array.isArray(body.gaps)
+          ? (body.gaps as unknown[]).map(Number)
+          : text.split(/[\s,]+/).filter(Boolean).map(Number).filter((n) => !Number.isNaN(n) && n >= 0);
+        result = decodeTimingGaps(gaps);
+        break;
+      }
       default:
         return NextResponse.json({ error: `Unknown action: ${action}` }, { status: 400 });
     }
