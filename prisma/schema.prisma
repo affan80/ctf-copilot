@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Challenge {
+  id          String   @id @default(cuid())
+  title       String
+  url         String?
+  category    String   @default("unknown")
+  points      Int      @default(0)
+  description String   @default("")
+  hints       String   @default("")
+  attachments String   @default("")
+  solution    String   @default("")
+  flag        String   @default("")
+  status      String   @default("open") // open | solved
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  writeups    Writeup[]
+}
+
+model LlmConfig {
+  id        String   @id @default(cuid())
+  name      String
+  provider  String // openai | anthropic | google | deepseek | groq | ollama | zai
+  model     String
+  apiKey    String   @default("")
+  baseUrl   String   @default("")
+  enabled   Boolean  @default(true)
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SolveSession {
+  id          String   @id @default(cuid())
+  challengeId String?
+  tool        String // analyze | decode | llm | caesar | ...
+  input       String
+  output      String   @default("")
+  provider    String   @default("")
+  success     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+model Writeup {
+  id          String    @id @default(cuid())
+  challengeId String?
+  challenge   Challenge? @relation(fields: [challengeId], references: [id])
+  title       String
+  content     String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
